@@ -1,50 +1,249 @@
 ---
-import BaseHead from '../components/BaseHead.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../config';
 ---
 
-<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header title={SITE_TITLE} />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
-			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This
-				template serves as a lightweight, minimally-styled starting point for anyone looking to build
-				a personal website, blog, or portfolio with Astro.
-			</p>
-			<p>
-				This template comes with a few integrations already configured in your
-				<code>astro.config.mjs</code> file. You can customize your setup with
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/pages/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to <a href="https://docs.astro.build/"
-					>read the docs
-				</a> or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out <a
-					href="https://github.com/Charca/astro-blog-template"
-					>astro-blog-template
-				</a> by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro + TailwindCSS</title>
+    <style>
+      .parallax {
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .scroll-snap-container {
+        display: flex;
+        scroll-snap-type: x mandatory;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        width: 100vw;
+        height: 100vh;
+        scroll-behavior: smooth;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+        -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+      }
+
+      .scroll-snap-container::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+      }
+
+      .scroll-snap-container section {
+        flex-shrink: 0;
+        width: 100vw;
+        height: 100vh;
+        scroll-snap-align: center;
+      }
+
+      nav {
+        background: rgba(0, 0, 0, 0.3);
+        width: max-content;
+        display: block;
+        padding: 0.7rem 1.7rem;
+        z-index: 2;
+        position: fixed;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 2rem;
+        display: flex;
+        gap: 0.8rem;
+        border-radius: 3rem;
+        backdrop-filter: blur(15px);
+      }
+
+      nav a {
+        background: transparent;
+        padding: 0.9rem;
+        border-radius: 50%;
+        display: flex;
+        color: white;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      nav a:hover {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      nav a.active {
+        background-color: gray;
+        color: black;
+        position: relative;
+      }
+
+      nav a.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+      nav a.active.animate::before {
+        transform: scaleX(1);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="scroll-snap-container">
+      <nav>
+        <a href="#hero" class="active">0</a>
+        <a href="#about">0</a>
+        <a href="#work">0</a>
+        <a href="#contact">0</a>
+      </nav>
+      <section id="hero">
+        <!-- Hero section -->
+        <div
+          class="flex items-center justify-center h-full parallax"
+          style="background-image: url('/background-1.jpg');"
+        >
+          <h1 class="text-4xl font-bold text-white">Your Name</h1>
+        </div>
+      </section>
+
+      <section id="about">
+        <!-- About Me section -->
+        <div
+          class="flex items-center justify-center bg-gray-700 text-white h-full"
+        >
+          <h2 class="text-3xl font-bold">About Me</h2>
+        </div>
+      </section>
+
+      <section id="work">
+        <!-- Projects section -->
+        <div
+          class="flex items-center justify-center bg-gray-500 text-white h-full"
+        >
+          <h2 class="text-3xl font-bold">My Work</h2>
+        </div>
+      </section>
+
+      <section id="contact">
+        <!-- Contact section -->
+        <div
+          class="flex items-center justify-center bg-gray-300 text-black h-full"
+        >
+          <h2 class="text-3xl font-bold">Contact</h2>
+        </div>
+      </section>
+    </div>
+    <script>
+      // JavaScript code to handle scroll events
+      const scrollContainer = document.querySelector(
+        '.scroll-snap-container',
+      ) as HTMLElement;
+      const navLinks = document.querySelectorAll<HTMLAnchorElement>('nav a');
+
+      let isScrolling = false;
+      let scrollTimeout: number;
+
+      // Function to update the active navigation item
+      function updateActiveNavItem(link: HTMLAnchorElement) {
+        // Remove the active class from all navigation items
+        navLinks.forEach(navLink => {
+          navLink.classList.remove('active');
+        });
+
+        // Add the active class to the selected navigation item
+        link.classList.add('active');
+
+        // Trigger the transition animation
+        setTimeout(() => {
+          link.classList.add('animate');
+        }, 0);
+
+        // Reset the animation after it completes
+        setTimeout(() => {
+          link.classList.remove('animate');
+        }, 300);
+      }
+
+      scrollContainer.addEventListener('wheel', (event: WheelEvent) => {
+        event.preventDefault();
+
+        if (!isScrolling) {
+          isScrolling = true;
+
+          // Determine scroll direction
+          const scrollDirection = event.deltaY > 0 ? 'right' : 'left';
+
+          // Calculate the amount of scrolling
+          const scrollAmount = window.innerWidth;
+
+          // Calculate the duration based on the scroll amount
+          const duration = Math.min(1000, Math.abs(scrollAmount / 2));
+
+          // Scroll the container horizontally with smooth behavior
+          scrollContainer.scrollBy({
+            left: scrollDirection === 'right' ? scrollAmount : -scrollAmount,
+            behavior: 'smooth',
+          });
+
+          // Find the current active section based on scroll position
+          const currentSection = Array.from(
+            document.querySelectorAll('.scroll-snap-container section'),
+          ).find(
+            section =>
+              Math.abs((section as HTMLElement).getBoundingClientRect().left) <
+              window.innerWidth / 2,
+          );
+
+          if (currentSection) {
+            const currentLinkId = currentSection.getAttribute('id');
+            const currentNavLink = document.querySelector<HTMLAnchorElement>(
+              `nav a[href="#${currentLinkId}"]`,
+            );
+
+            if (currentNavLink) {
+              // Trigger the transition animation on the next navigation item
+              const nextNavLink =
+                scrollDirection === 'right'
+                  ? currentNavLink.nextElementSibling
+                  : currentNavLink.previousElementSibling;
+              if (nextNavLink) {
+                updateActiveNavItem(nextNavLink as HTMLAnchorElement);
+              }
+            }
+          }
+
+          // Clear the previous timeout (if any) to reset the scrolling flag
+          clearTimeout(scrollTimeout);
+
+          // Wait for the scroll animation to finish
+          scrollTimeout = setTimeout(() => {
+            isScrolling = false;
+          }, duration);
+        }
+      });
+
+      // Add click event listener to each navigation item
+      navLinks.forEach(link => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+
+          // Update the active navigation item
+          updateActiveNavItem(link);
+
+          // Scroll to the corresponding section
+          const targetSectionId = link.getAttribute('href')!.substring(1);
+          const targetSection = document.getElementById(targetSectionId);
+          if (targetSection) {
+            targetSection.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
