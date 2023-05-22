@@ -1,0 +1,195 @@
+---
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro + TailwindCSS</title>
+    <style>
+      .parallax {
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .scroll-snap-container {
+        display: flex;
+        scroll-snap-type: x mandatory;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        width: 100vw;
+        height: 100vh;
+        scroll-behavior: smooth;
+        overscroll-behavior-x: contain;
+        scrollbar-width: none; /* Hide scrollbar for Firefox */
+        -ms-overflow-style: none; /* Hide scrollbar for IE and Edge */
+      }
+
+      .scroll-snap-container::-webkit-scrollbar {
+        display: none; /* Hide scrollbar for Chrome, Safari, and Opera */
+      }
+
+      nav a {
+        background: transparent;
+        padding: 0.9rem;
+        border-radius: 50%;
+        display: flex;
+        color: white;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      nav a:hover {
+        background: rgba(0, 0, 0, 0.3);
+      }
+
+      nav a.active {
+        background-color: gray;
+        color: black;
+        position: relative;
+      }
+
+      nav a.active::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.3);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+      }
+      nav a.active.animate::before {
+        transform: scaleX(1);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="scroll-snap-container">
+      <nav
+        class="bg-opacity-30 w-max py-2 px-4 z-2 fixed left-1/2 -translate-x-1/2 bottom-8 flex gap-2 rounded-full backdrop-blur-3xl"
+      >
+        <a href="#hero" class="active">0</a>
+        <a href="#about">0</a>
+        <a href="#work">0</a>
+        <a href="#contact">0</a>
+      </nav>
+      <slot />
+      <script>
+        // JavaScript code to handle scroll events
+        const scrollContainer = document.querySelector(
+          '.scroll-snap-container',
+        ) as HTMLElement;
+        const navLinks = document.querySelectorAll<HTMLAnchorElement>('nav a');
+
+        let isScrolling = false;
+        let scrollTimeout: number;
+
+        // Function to update the active navigation item
+        function updateActiveNavItem(link: HTMLAnchorElement) {
+          // Remove the active class from all navigation items
+          navLinks.forEach(navLink => {
+            navLink.classList.remove('active');
+          });
+
+          // Add the active class to the selected navigation item
+          link.classList.add('active');
+
+          // Trigger the transition animation
+          setTimeout(() => {
+            link.classList.add('animate');
+          }, 0);
+
+          // Reset the animation after it completes
+          setTimeout(() => {
+            link.classList.remove('animate');
+          }, 300);
+        }
+
+        scrollContainer.addEventListener('wheel', (event: WheelEvent) => {
+          event.preventDefault();
+
+          if (!isScrolling) {
+            isScrolling = true;
+
+            // Determine scroll direction
+            const scrollDirection = event.deltaY > 0 ? 'right' : 'left';
+
+            // Calculate the amount of scrolling
+            const scrollAmount = window.innerWidth;
+
+            // Calculate the duration based on the scroll amount
+            const duration = Math.min(1000, Math.abs(scrollAmount / 2));
+
+            // Scroll the container horizontally with smooth behavior
+            scrollContainer.scrollBy({
+              left: scrollDirection === 'right' ? scrollAmount : -scrollAmount,
+              behavior: 'smooth',
+            });
+
+            // Find the current active section based on scroll position
+            const currentSection = Array.from(
+              document.querySelectorAll('.scroll-snap-container section'),
+            ).find(
+              section =>
+                Math.abs(
+                  (section as HTMLElement).getBoundingClientRect().left,
+                ) <
+                window.innerWidth / 2,
+            );
+
+            if (currentSection) {
+              const currentLinkId = currentSection.getAttribute('id');
+              const currentNavLink = document.querySelector<HTMLAnchorElement>(
+                `nav a[href="#${currentLinkId}"]`,
+              );
+
+              if (currentNavLink) {
+                // Trigger the transition animation on the next navigation item
+                const nextNavLink =
+                  scrollDirection === 'right'
+                    ? currentNavLink.nextElementSibling
+                    : currentNavLink.previousElementSibling;
+                if (nextNavLink) {
+                  updateActiveNavItem(nextNavLink as HTMLAnchorElement);
+                }
+              }
+            }
+
+            // Clear the previous timeout (if any) to reset the scrolling flag
+            clearTimeout(scrollTimeout);
+
+            // Wait for the scroll animation to finish
+            scrollTimeout = setTimeout(() => {
+              isScrolling = false;
+            }, duration);
+          }
+        });
+
+        // Add click event listener to each navigation item
+        navLinks.forEach(link => {
+          link.addEventListener('click', event => {
+            event.preventDefault();
+
+            // Update the active navigation item
+            updateActiveNavItem(link);
+
+            // Scroll to the corresponding section
+            const targetSectionId = link.getAttribute('href')!.substring(1);
+            const targetSection = document.getElementById(targetSectionId);
+            if (targetSection) {
+              targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+          });
+        });
+      </script>
+    </div>
+  </body>
+</html>
